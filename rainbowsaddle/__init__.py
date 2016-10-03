@@ -96,7 +96,7 @@ class RainbowSaddle(object):
         os.kill(self.arbiter_pid, signal.SIGUSR2)
 
         # Wait until pidfile has been renamed
-        old_pidfile = self.pidfile + '.oldbin'
+        old_pidfile = self.pidfile + '.2'
         while True:
             if op.exists(old_pidfile):
                 break
