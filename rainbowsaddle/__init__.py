@@ -104,10 +104,12 @@ class RainbowSaddle(object):
 
         # Wait until pidfile has been renamed
         old_pidfile = self.pidfile + '.2'
-        while True:
+        for x in range(10):
             if op.exists(old_pidfile):
+                print('Found file {}'.format(old_pidfile))
                 break
-            time.sleep(0.3)
+            print('Try {}'.format(x))
+            time.sleep(0.3 * x)
 
         # Read new arbiter PID, being super paranoid about it (we read the PID
         # file until we get the same value twice)
