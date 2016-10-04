@@ -106,9 +106,9 @@ class RainbowSaddle(object):
         old_pidfile = self.pidfile + '.2'
         for x in range(10):
             if op.exists(old_pidfile):
-                print('Found file {}'.format(old_pidfile))
+                self.log('Found file {}'.format(old_pidfile))
                 break
-            print('Try {}'.format(x))
+            self.log('Try {}'.format(x))
             time.sleep(0.3 * x)
 
         # Read new arbiter PID, being super paranoid about it (we read the PID
