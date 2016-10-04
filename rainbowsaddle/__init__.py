@@ -132,13 +132,14 @@ class RainbowSaddle(object):
         # Gracefully kill old workers
         self.log('Gracefully shutting down workers for old arbiter with PID %s' % self.arbiter_pid)
         os.kill(self.arbiter_pid, signal.SIGWINCH)
+
+        self.log('Stopping old arbiter with PID %s' % self.arbiter_pid)
+        os.kill(self.arbiter_pid, signal.SIGTERM)
+
         self.wait_pid(self.arbiter_pid)
 
         self.arbiter_pid = pid
         self.log('New arbiter PID is %s' % self.arbiter_pid)
-
-        self.log('Stopping old arbiter with PID %s' % self.arbiter_pid)
-        os.kill(self.arbiter_pid, signal.SIGTERM)
 
     def stop(self, signum, frame):
         os.kill(self.arbiter_pid, signal.SIGTERM)
