@@ -26,8 +26,10 @@ def signal_handler(func):
         try:
             return func(*args, **kwargs)
         except:
-            print('Uncaught exception in signal handler %s' % func,
-                    file=sys.stderr)
+            print(
+                'Uncaught exception in signal handler {}'.format(func),
+                file=sys.stderr
+            )
             traceback.print_exc()
     return wrapper
 
@@ -42,8 +44,11 @@ class RainbowSaddle(object):
         if options.gunicorn_pidfile:
             fp = open(options.gunicorn_pidfile, 'r+')
         else:
-            fp = tempfile.NamedTemporaryFile(prefix='rainbow-saddle-gunicorn-',
-                suffix='.pid', delete=False)
+            fp = tempfile.NamedTemporaryFile(
+                prefix='rainbow-saddle-gunicorn-',
+                suffix='.pid',
+                delete=False,
+            )
         fp.close()
         self.pidfile = fp.name
         # Start gunicorn process
@@ -81,8 +86,10 @@ class RainbowSaddle(object):
             return False
         else:
             if pstatus == psutil.STATUS_ZOMBIE:
-                self.log('Gunicorn master is %s (PID: %s), shutting down '
-                    'rainbow-saddle' % (pstatus, self.arbiter_pid))
+                self.log(
+                    'Gunicorn master is {} (PID: {}), shutting down '
+                    'rainbow-saddle'.format(pstatus, self.arbiter_pid)
+                )
                 return False
         return True
 
@@ -121,12 +128,15 @@ class RainbowSaddle(object):
             time.sleep(0.3)
 
         # Gracefully kill old workers
-        self.log('Stoping old arbiter with PID %s' % self.arbiter_pid)
-        os.kill(self.arbiter_pid, signal.SIGTERM)
+        self.log('Gracefully shutting down workers for old arbiter with PID %s' % self.arbiter_pid)
+        os.kill(self.arbiter_pid, signal.SIGWINCH)
         self.wait_pid(self.arbiter_pid)
 
         self.arbiter_pid = pid
         self.log('New arbiter PID is %s' % self.arbiter_pid)
+
+        self.log('Stopping old arbiter with PID %s' % self.arbiter_pid)
+        os.kill(self.arbiter_pid, signal.SIGTERM)
 
     def stop(self, signum, frame):
         os.kill(self.arbiter_pid, signal.SIGTERM)
@@ -158,14 +168,22 @@ class RainbowSaddle(object):
 
 def main():
     # Parse command line
-    parser = argparse.ArgumentParser(description='Wrap gunicorn to handle '
-            'graceful restarts correctly')
-    parser.add_argument('--pid', help='a filename to store the '
-            'rainbow-saddle PID')
-    parser.add_argument('--gunicorn-pidfile', help='a filename to store the '
-            'gunicorn PID')
-    parser.add_argument('gunicorn_args', nargs=argparse.REMAINDER,
-            help='gunicorn command line')
+    parser = argparse.ArgumentParser(
+        description='Wrap gunicorn to handle graceful restarts correctly'
+    )
+    parser.add_argument(
+        '--pid',
+        help='a filename to store the rainbow-saddle PID'
+    )
+    parser.add_argument(
+        '--gunicorn-pidfile',
+        help='a filename to store the gunicorn PID'
+    )
+    parser.add_argument(
+        'gunicorn_args',
+        nargs=argparse.REMAINDER,
+        help='gunicorn command line'
+    )
     options = parser.parse_args()
 
     # Write pid file
